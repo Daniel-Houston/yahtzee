@@ -1,10 +1,10 @@
 package main
 
 import(
-	"fmt"
 	"bufio"
-	"os"
+	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -26,41 +26,46 @@ var yahtzeeRules map[string]Rule = map[string]Rule{
 }
 
 func main() {
-	dice := getDice()
+	for {
+		dice, err := getDice()
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	//TODO Validate Inputs
-	p := FindYahtzeePoints(dice)
-	fmt.Printf("Inputs: %v\n", dice)
-	fmt.Printf("Points: %v, From: %v, IncludedVals: %v\n", p.Points, p.RuleKey, p.IncludedVals)
+		//TODO Validate Inputs
+		p := FindYahtzeePoints(dice)
+		fmt.Printf("Inputs: %v\n", dice)
+		fmt.Printf("Points: %v, From: %v, IncludedVals: %v\n", p.Points, p.RuleKey, p.IncludedVals)
+	}
 }
 
-func getDice() []int {
+func getDice() ([]int, error) {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter the dice separated by commas: ")
 	text, err := reader.ReadString('\n')
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	strs := strings.Split(strings.TrimSpace(text), ",")
 	if len(strs) != 5 {
-		log.Fatalf("Wrong number of inputs. Want 5 got %v", len(strs))
+		return nil, fmt.Errorf("Wrong number of inputs. Want 5 got %v", len(strs))
 	}
 
 	dice := make([]int, 0)
 	for _, s := range strs {
 		die, err := strconv.Atoi(s)	
 		if err != nil {
-			log.Fatal(err)
+			return nil, err
 		}
 
 		if die < 1 || die > 6 {
-			log.Fatalf("Value %v is invalid, must be between 1 and 6", die)
+			return nil, fmt.Errorf("Value %v is invalid, must be between 1 and 6", die)
 		}
 
 		dice = append(dice, die)
 	}
 
-	return dice
+	return dice, nil
 }
 
 func FindYahtzeePoints(dice []int) *Points{
