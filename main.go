@@ -32,7 +32,6 @@ func main() {
 			log.Fatal(err)
 		}
 
-		//TODO Validate Inputs
 		p := FindYahtzeePoints(dice)
 		fmt.Printf("Inputs: %v\n", dice)
 		fmt.Printf("Points: %v, From: %v, IncludedVals: %v\n", p.Points, p.RuleKey, p.IncludedVals)
